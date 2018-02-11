@@ -16,6 +16,7 @@
 package com.google.firebase.udacity.friendlychat;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -32,8 +33,12 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -46,13 +51,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.ortiz.touchview.TouchImageView;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MessageAdapter.ListItemClickListener {
 
     private static final String TAG = "MainActivity";
 
@@ -67,7 +73,8 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton mPhotoPickerButton;
     private EditText mMessageEditText;
     private Button mSendButton;
-
+    private TouchImageView mLargeImage;
+    private RelativeLayout mRelativeLayout;
 
     private static String mUsername;
 
@@ -92,6 +99,8 @@ public class MainActivity extends AppCompatActivity {
         mPhotoPickerButton = (ImageButton) findViewById(R.id.photoPickerButton);
         mMessageEditText = (EditText) findViewById(R.id.messageEditText);
         mSendButton = (Button) findViewById(R.id.sendButton);
+        mLargeImage = (TouchImageView)findViewById(R.id.largeImage);
+        mRelativeLayout = (RelativeLayout)findViewById(R.id.relativeLayout);
 
         // Initialize message ListView and its adapter
         List<FriendlyMessage> friendlyMessages = new ArrayList<>();
@@ -175,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
-        mMessageAdapter = new MessageAdapter(this, R.layout.item_message, friendlyMessages,mUsername);
+        mMessageAdapter = new MessageAdapter(this, R.layout.item_message, friendlyMessages,this);
         mMessageListView.setAdapter(mMessageAdapter);
     }
 
@@ -297,5 +306,34 @@ public class MainActivity extends AppCompatActivity {
         if(mChildEventListener != null)
         mMessagesDatabaseReference.removeEventListener(mChildEventListener);
         mChildEventListener =null;
+    }
+    public void triggerLargeImage(int type)
+    {
+        if(type == 1) {
+            mLargeImage.setVisibility(View.VISIBLE);
+            mRelativeLayout.setVisibility(View.INVISIBLE);
+        }else {
+            mLargeImage.setVisibility(View.GONE);
+            mRelativeLayout.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onListItemClick(String imageRes) {
+
+        Glide.with(mLargeImage.getContext()).load(imageRes).asBitmap().into(new SimpleTarget<Bitmap>() {
+            @Override
+            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                mLargeImage.setImageBitmap(resource);
+                triggerLargeImage(1);
+            }
+        });
+        //triggerLargeImage(1);
+    }
+    @Override
+    public void onBackPressed() {
+        if(mLargeImage.getVisibility() == View.INVISIBLE)
+            super.onBackPressed();
+        else {triggerLargeImage(0);}
     }
 }
