@@ -49,6 +49,7 @@ import com.google.firebase.storage.UploadTask;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
     private Button mSendButton;
 
 
-    private String mUsername;
+    private static String mUsername;
 
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mMessagesDatabaseReference;
@@ -95,8 +96,7 @@ public class MainActivity extends AppCompatActivity {
         // Initialize message ListView and its adapter
         List<FriendlyMessage> friendlyMessages = new ArrayList<>();
 
-        mMessageAdapter = new MessageAdapter(this, R.layout.item_message, friendlyMessages);
-        mMessageListView.setAdapter(mMessageAdapter);
+
 
         // Initialize progress bar
         mProgressBar.setVisibility(ProgressBar.INVISIBLE);
@@ -157,6 +157,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = mFirebaseAuth.getCurrentUser();
+                final List<AuthUI.IdpConfig> signInMethods = Arrays.asList(
+                        new AuthUI.IdpConfig.EmailBuilder().build(),
+                        new AuthUI.IdpConfig.GoogleBuilder().build());
                 if (user != null) {
                     String username = user.getDisplayName();
                     onSignedInInitialize(username);
@@ -166,14 +169,14 @@ public class MainActivity extends AppCompatActivity {
                             AuthUI.getInstance()
                                     .createSignInIntentBuilder()
                                     .setIsSmartLockEnabled(false)
-                                    .setProviders(
-                                            AuthUI.EMAIL_PROVIDER,
-                                            AuthUI.GOOGLE_PROVIDER)
+                                    .setAvailableProviders(signInMethods)
                                     .build(),
                             RC_SIGN_IN);
                 }
             }
         };
+        mMessageAdapter = new MessageAdapter(this, R.layout.item_message, friendlyMessages,mUsername);
+        mMessageListView.setAdapter(mMessageAdapter);
     }
 
     @Override
