@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
+import android.support.constraint.ConstraintLayout;
+import android.support.constraint.ConstraintSet;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.Gravity;
@@ -25,6 +27,7 @@ public class MessageAdapter extends ArrayAdapter<FriendlyMessage> {
     FirebaseAuth mFirebaseAuth = FirebaseAuth.getInstance();
     FirebaseUser user = mFirebaseAuth.getCurrentUser();
     String userName = user.getDisplayName();
+    public static final String YOU_AUTHOR = "You";
 
     public interface ListItemClickListener{
         public void onListItemClick(String imageRes);
@@ -49,20 +52,9 @@ public class MessageAdapter extends ArrayAdapter<FriendlyMessage> {
         TextView authorTextView = (TextView) convertView.findViewById(R.id.nameTextView);
         LinearLayout linearLayout = (LinearLayout)convertView.findViewById(R.id.linearlayouttop);
         CardView cardView = (CardView)convertView.findViewById(R.id.cardView);
+        ConstraintLayout constraintLayout = (ConstraintLayout)convertView.findViewById(R.id.constraintLayout);
 
         final FriendlyMessage message = getItem(position);
-        if(userName != null)
-            Log.v("UserName : ", userName);
-        else
-            Log.v("UserNanme : " , "null");
-        if(message.getName().equals(userName)) {
-            //linearLayout.setGravity(Gravity.RIGHT | Gravity.END);
-            cardView.setCardBackgroundColor(cardView.getRootView().getResources().getColor(R.color.cyanA100));
-        }else
-        {
-            //linearLayout.setGravity(Gravity.LEFT | Gravity.START);
-            cardView.setCardBackgroundColor(cardView.getRootView().getResources().getColor(R.color.greenA100));
-        }
 
         boolean isPhoto = message.getPhotoUrl() != null;
         if (isPhoto) {
@@ -83,6 +75,24 @@ public class MessageAdapter extends ArrayAdapter<FriendlyMessage> {
             messageTextView.setText(message.getText());
         }
         authorTextView.setText(message.getName());
+
+        {
+            //User Specific Changes
+            {
+                if(message.getName().equals(userName)) {
+                    //linearLayout.setGravity(Gravity.RIGHT | Gravity.END);
+                    cardView.setCardBackgroundColor(cardView.getRootView().getResources().getColor(R.color.cyanA100));
+                    authorTextView.setText(YOU_AUTHOR);
+                    ConstraintSet constraintSet = new ConstraintSet();
+                    constraintSet.clone(constraintLayout);
+                    constraintSet.connect(cardView.getId(),ConstraintSet.LEFT,constraintLayout.getId(),ConstraintSet.RIGHT,0);
+                    constraintSet.applyTo(constraintLayout);
+                }else {
+                    //linearLayout.setGravity(Gravity.LEFT | Gravity.START);
+                    cardView.setCardBackgroundColor(cardView.getRootView().getResources().getColor(R.color.greenA100));
+                }
+            }
+        }
 
         return convertView;
     }
