@@ -50,9 +50,10 @@ public class MessageAdapter extends ArrayAdapter<FriendlyMessage> {
         ImageView photoImageView = (ImageView) convertView.findViewById(R.id.photoImageView);
         TextView messageTextView = (TextView) convertView.findViewById(R.id.messageTextView);
         TextView authorTextView = (TextView) convertView.findViewById(R.id.nameTextView);
-        LinearLayout linearLayout = (LinearLayout)convertView.findViewById(R.id.linearlayouttop);
         CardView cardView = (CardView)convertView.findViewById(R.id.cardView);
-        ConstraintLayout constraintLayout = (ConstraintLayout)convertView.findViewById(R.id.constraintLayout);
+        LinearLayout constraintLayout = (LinearLayout) convertView.findViewById(R.id.constraintLayout);
+        ImageView leftImage = (ImageView)convertView.findViewById(R.id.imageLeft);
+        ImageView rightImage = (ImageView)convertView.findViewById(R.id.imageRight);
 
         final FriendlyMessage message = getItem(position);
 
@@ -83,13 +84,19 @@ public class MessageAdapter extends ArrayAdapter<FriendlyMessage> {
                     //linearLayout.setGravity(Gravity.RIGHT | Gravity.END);
                     cardView.setCardBackgroundColor(cardView.getRootView().getResources().getColor(R.color.cyanA100));
                     authorTextView.setText(YOU_AUTHOR);
-                    ConstraintSet constraintSet = new ConstraintSet();
-                    constraintSet.clone(constraintLayout);
-                    constraintSet.connect(cardView.getId(),ConstraintSet.LEFT,constraintLayout.getId(),ConstraintSet.RIGHT,0);
-                    constraintSet.applyTo(constraintLayout);
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+                    params.gravity = Gravity.END;
+                    constraintLayout.setLayoutParams(params);
+                    rightImage.setVisibility(View.GONE);
+                    leftImage.setVisibility(View.INVISIBLE);
                 }else {
                     //linearLayout.setGravity(Gravity.LEFT | Gravity.START);
                     cardView.setCardBackgroundColor(cardView.getRootView().getResources().getColor(R.color.greenA100));
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+                    params.gravity = Gravity.START;
+                    constraintLayout.setLayoutParams(params);
+                    leftImage.setVisibility(View.GONE);
+                    rightImage.setVisibility(View.INVISIBLE);
                 }
             }
         }
