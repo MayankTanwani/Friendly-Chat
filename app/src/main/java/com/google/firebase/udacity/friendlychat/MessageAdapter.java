@@ -44,16 +44,18 @@ public class MessageAdapter extends ArrayAdapter<FriendlyMessage> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
-            convertView = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.item_message1, parent, false);
+            if(userName.equals(getItem(position).getName())){
+                convertView = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.item_message1, parent, false);
+            }
+            else
+                convertView = ((Activity) getContext()).getLayoutInflater().inflate(R.layout.item_message, parent, false);
         }
 
         ImageView photoImageView = (ImageView) convertView.findViewById(R.id.photoImageView);
         TextView messageTextView = (TextView) convertView.findViewById(R.id.messageTextView);
         TextView authorTextView = (TextView) convertView.findViewById(R.id.nameTextView);
         CardView cardView = (CardView)convertView.findViewById(R.id.cardView);
-        LinearLayout constraintLayout = (LinearLayout) convertView.findViewById(R.id.constraintLayout);
-        ImageView leftImage = (ImageView)convertView.findViewById(R.id.imageLeft);
-        ImageView rightImage = (ImageView)convertView.findViewById(R.id.imageRight);
+        ConstraintLayout constraintLayout = (ConstraintLayout) convertView.findViewById(R.id.constraintLayout);
 
         final FriendlyMessage message = getItem(position);
 
@@ -81,22 +83,10 @@ public class MessageAdapter extends ArrayAdapter<FriendlyMessage> {
             //User Specific Changes
             {
                 if(message.getName().equals(userName)) {
-                    //linearLayout.setGravity(Gravity.RIGHT | Gravity.END);
                     cardView.setCardBackgroundColor(cardView.getRootView().getResources().getColor(R.color.cyanA100));
                     authorTextView.setText(YOU_AUTHOR);
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
-                    params.gravity = Gravity.END;
-                    constraintLayout.setLayoutParams(params);
-                    rightImage.setVisibility(View.GONE);
-                    leftImage.setVisibility(View.INVISIBLE);
                 }else {
-                    //linearLayout.setGravity(Gravity.LEFT | Gravity.START);
                     cardView.setCardBackgroundColor(cardView.getRootView().getResources().getColor(R.color.greenA100));
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
-                    params.gravity = Gravity.START;
-                    constraintLayout.setLayoutParams(params);
-                    leftImage.setVisibility(View.GONE);
-                    rightImage.setVisibility(View.INVISIBLE);
                 }
             }
         }
